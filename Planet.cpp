@@ -9,7 +9,7 @@
 #include <iostream>
 #include <set>
 
-Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Polar), m_bWireframe(false)
+Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Polar), m_bWireframe(false), m_bHitTest(true)
 {
     if (!m_texture.loadFromFile("../res/craters.png"))
 		throw;
@@ -76,13 +76,16 @@ void Planet::Update(float tDelta)
 		Vec3 posPlayer;
 		xfNew.MultPointInverse(posPlayer, Vec3(0, 1, 0));
 
-		float hpw = m_pPlayer->GetWidth() / 2;
-		for (auto& p : m_objs)
+		if (m_bHitTest)
 		{
-			float angle = acosf(posPlayer.Dot(p->GetPos()));
-			float angleMin = (hpw + p->GetWidth() / 2) / m_radius;
-			if (angle < angleMin)
-				return false;
+			float hpw = m_pPlayer->GetWidth() / 2;
+			for (auto& p : m_objs)
+			{
+				float angle = acosf(posPlayer.Dot(p->GetPos()));
+				float angleMin = (hpw + p->GetWidth() / 2) / m_radius;
+				if (angle < angleMin)
+					return false;
+			}
 		}
 		m_xform = xfNew;
 		return true;
@@ -124,6 +127,8 @@ void Planet::OnKeyPressed(sf::Keyboard::Key key)
 	}
 	else if (key == sf::Keyboard::W)
 		m_bWireframe = !m_bWireframe;
+	else if (key == sf::Keyboard::H)
+		m_bHitTest = !m_bHitTest;
 }
 
 void Planet::CreateMesh()

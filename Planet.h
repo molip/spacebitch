@@ -35,7 +35,7 @@ private:
 	sf::Texture m_texture;
 	Matrix m_xform;
 	float m_radius;
-	bool m_bWireframe;
+	bool m_bWireframe, m_bHitTest;
 
 	enum class MeshType { Polar, Quad, _count };
 
