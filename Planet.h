@@ -37,7 +37,7 @@ private:
 	float m_radius;
 	bool m_bWireframe, m_bHitTest;
 
-	enum class MeshType { Polar, Quad, _count };
+	enum class MeshType { Polar, _count };
 
 	std::vector<std::unique_ptr<Sprite>> m_objs;
 	std::unique_ptr<Player> m_pPlayer;

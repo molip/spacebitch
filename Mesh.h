@@ -25,14 +25,3 @@ public:
 	virtual void Draw(const Matrix& xf, const Vec2& vTexOffset) const override;
 };
 
-class Mesh2 : public Mesh
-{
-public:
-	Mesh2(float radius);
-	virtual void Draw(const Matrix& xf, const Vec2& vTexOffset) const override;
-private:
-//	typedef std::list<Vec3> VL;
-//	typedef std::list<VL> Side;
-
-//	Side m_sides[6];
-};

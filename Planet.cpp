@@ -136,7 +136,7 @@ void Planet::CreateMesh()
 	switch (m_meshType)
 	{
 	case MeshType::Polar: m_pMesh.reset(new Mesh1(m_radius)); break;
-	case MeshType::Quad: m_pMesh.reset(new Mesh2(m_radius)); break;
+//	case MeshType::Quad: m_pMesh.reset(new Mesh2(m_radius)); break;
 	}
 }
 
