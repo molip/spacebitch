@@ -3,7 +3,7 @@
 
 #include <SFML/OpenGL.hpp>
 
-Sprite::Sprite(float width, float alpha) : m_width(width), m_alpha(alpha)
+Sprite::Sprite(float width, float alpha) : m_width(width), m_widthHit(width), m_alpha(alpha)
 {
 }
 

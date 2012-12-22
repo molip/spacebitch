@@ -19,9 +19,11 @@ public:
 	void SetFootPos(const sf::Vector3f& v) { m_posDraw = v; } // pixel space
 
 	void SetPos(const sf::Vector3f& v) { m_pos = v; }
-	const sf::Vector3f& GetPos() { return m_pos; }
+	const sf::Vector3f& GetPos() const { return m_pos; }
 	
-	float GetWidth() { return m_width; }
+	float GetWidth() const { return m_width; }
+	float GetHitWidth() const { return m_widthHit; }
+	void SetHitWidth(float w) { m_widthHit = w; }
 
 	bool operator <(const Sprite& rhs) const;
 
@@ -34,6 +36,6 @@ private:
 	std::unique_ptr<Animation> m_pAnim;
 	sf::Vector3f m_pos; // normalised
 	sf::Vector3f m_posDraw; 
-	float m_width, m_alpha;
+	float m_width, m_widthHit, m_alpha;
 };
 

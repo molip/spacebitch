@@ -3,11 +3,27 @@
 #include "Sprite.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "Item.h"
 
 #include <SFML/OpenGL.hpp>
 
 #include <iostream>
 #include <set>
+
+namespace 
+{
+	Vec3 GetRandomPos()
+	{
+		Vec3 v((float)rand() - RAND_MAX / 2, (float)rand() - RAND_MAX / 2, (float)rand() - RAND_MAX / 2);
+		v.Normalise();
+		return v;
+	}
+
+	float GetAngleBetween(const Vec3& v1, const Vec3& v2) 
+	{
+		return acosf(v1.Dot(v2));
+	}
+}
 
 Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Polar), m_bWireframe(false), m_bHitTest(true)
 {
@@ -21,12 +37,21 @@ Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Po
 	auto& tex = Texture::Get("../res/tree1.png");
 	for (int i = 0; i < 500; ++i)
 	{
-		m_objs.push_back(std::unique_ptr<Sprite>(new Sprite(float(rand() % 30) + 10, 1)));
-		
-		Vec3 v((float)rand() - RAND_MAX / 2, (float)rand() - RAND_MAX / 2, (float)rand() - RAND_MAX / 2);
-		m_objs.back()->SetPos(v.Normalised());
+		float width = float(rand() % 30) + 10;
+		m_objs.push_back(std::unique_ptr<Sprite>(new Sprite(width, 1)));
+		m_objs.back()->SetHitWidth(width / 2);
+		m_objs.back()->SetPos(GetRandomPos());
 		m_objs.back()->SetAnimation(tex);
 	}
+
+	for (int i = 0; i < 100; ++i)
+	{
+		m_items.push_back(std::unique_ptr<Item>(new Item));
+		m_items.back()->SetPos(GetRandomPos());
+	}
+
+	//m_items.push_back(std::unique_ptr<Item>(new Item));
+	//m_items.back()->SetPos(Vec3(0, 1, 0));
 
 	CreateMesh();
 }
@@ -48,9 +73,34 @@ sf::Vector3f Planet::GetTopPointLocal() const
 	return sf::Vector3f(0, m_radius,  0);
 }
 
+float Planet::GetAngle(float width) const
+{
+	return width / m_radius;
+}
+
+bool Planet::HitTest(const Vec3& p1, float w1, const Vec3& p2, float w2) const
+{
+	float angle = GetAngleBetween(p1, p2);
+	float angleMin = GetAngle((w1 + w2) / 2);
+	return angle < angleMin;
+} 
+
+bool Planet::HitTest(const Sprite& s, const Vec3& p2, float w2) const
+{
+	return HitTest(s.GetPos(), s.GetHitWidth(), p2, w2);
+}
+
+bool Planet::HitTest(const Sprite& s1, const Sprite& s2) const
+{
+	return HitTest(s1.GetPos(), s1.GetHitWidth(), s2.GetPos(), s2.GetHitWidth());
+}
+
 void Planet::Update(float tDelta)
 {
 	m_pPlayer->Update(tDelta);
+
+	for (auto& p : m_items)
+		p->Update(tDelta);
 
 	int x = 0, y = 0;
 
@@ -77,16 +127,10 @@ void Planet::Update(float tDelta)
 		xfNew.MultPointInverse(posPlayer, Vec3(0, 1, 0));
 
 		if (m_bHitTest)
-		{
-			float hpw = m_pPlayer->GetWidth() / 2;
 			for (auto& p : m_objs)
-			{
-				float angle = acosf(posPlayer.Dot(p->GetPos()));
-				float angleMin = (hpw + p->GetWidth() / 2) / m_radius;
-				if (angle < angleMin)
+				if (HitTest(*p, posPlayer, m_pPlayer->GetHitWidth()))
 					return false;
-			}
-		}
+
 		m_xform = xfNew;
 		return true;
 	};
@@ -107,6 +151,16 @@ void Planet::Update(float tDelta)
 		if (!doMove(xf))
 			y = 0;
 	}
+
+	Vec3 posPlayer;
+	m_xform.MultPointInverse(posPlayer, Vec3(0, 1, 0));
+	m_pPlayer->SetPos(posPlayer);
+
+	for (auto it = m_items.begin(); it != m_items.end(); )
+		if (HitTest(**it, *m_pPlayer))
+			it = m_items.erase(it);
+		else
+			++it;
 
 	m_vTexOffset.x += y * deg / 360;
 	m_vTexOffset.y += x * deg / 360;
@@ -176,6 +230,13 @@ void Planet::DrawSprites() const
 	set.insert(m_pPlayer.get());
 
 	for (auto& p : m_objs)
+	{
+		sf::Vector3f v = xf.MultPoint(TransformPos(p->GetPos()));
+		p->SetFootPos(v);
+		set.insert(p.get());
+	}
+
+	for (auto& p : m_items)
 	{
 		sf::Vector3f v = xf.MultPoint(TransformPos(p->GetPos()));
 		p->SetFootPos(v);

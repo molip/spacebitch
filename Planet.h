@@ -10,6 +10,8 @@
 class Sprite;
 class Player;
 class Mesh;
+class Item;
+
 class Planet
 {
 public:
@@ -32,6 +34,11 @@ private:
 	void DrawSprites() const;
 	void CreateMesh();
 
+	float GetAngle(float width) const;
+	bool HitTest(const Sprite& s1, const Sprite& s2) const;
+	bool HitTest(const Sprite& s, const Vec3& p2, float w2) const;
+	bool HitTest(const Vec3& p1, float w1, const Vec3& p2, float w2) const;
+
 	sf::Texture m_texture;
 	Matrix m_xform;
 	float m_radius;
@@ -40,6 +47,7 @@ private:
 	enum class MeshType { Polar, _count };
 
 	std::vector<std::unique_ptr<Sprite>> m_objs;
+	std::vector<std::unique_ptr<Item>> m_items;
 	std::unique_ptr<Player> m_pPlayer;
 	std::unique_ptr<Mesh> m_pMesh;
 	MeshType m_meshType;
