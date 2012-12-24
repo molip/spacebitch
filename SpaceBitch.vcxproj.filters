@@ -73,5 +73,11 @@
     <ClInclude Include="Item.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpaceBitch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

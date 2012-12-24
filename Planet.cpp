@@ -44,6 +44,10 @@ Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Po
 		m_objs.back()->SetAnimation(tex);
 	}
 
+	m_objs.push_back(std::unique_ptr<Sprite>(new Sprite(60, 1)));
+	m_objs.back()->SetPos(Vec3(0, 1, -0.2).Normalised());
+	m_objs.back()->SetAnimation("../res/cookery.png");
+
 	for (int i = 0; i < 100; ++i)
 	{
 		m_items.push_back(std::unique_ptr<Item>(new Item));
@@ -214,8 +218,8 @@ void Planet::DrawSprites() const
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
-	MatrixGL xf;
-	xf.GetModelView();
+	MatrixGL xfView;
+	xfView.GetModelView();
 		
 	glLoadIdentity();
 		
@@ -226,25 +230,25 @@ void Planet::DrawSprites() const
 	std::set<const Sprite*, Comp> set;
 
 	sf::Vector3f vPlayer = GetTopPointLocal();
-	m_pPlayer->SetFootPos(xf.MultPoint(vPlayer));
+	m_pPlayer->SetFootPos(xfView.MultPoint(vPlayer));
 	set.insert(m_pPlayer.get());
 
 	for (auto& p : m_objs)
 	{
-		sf::Vector3f v = xf.MultPoint(TransformPos(p->GetPos()));
+		sf::Vector3f v = xfView.MultPoint(TransformPos(p->GetPos()));
 		p->SetFootPos(v);
 		set.insert(p.get());
 	}
 
 	for (auto& p : m_items)
 	{
-		sf::Vector3f v = xf.MultPoint(TransformPos(p->GetPos()));
+		sf::Vector3f v = xfView.MultPoint(TransformPos(p->GetPos()));
 		p->SetFootPos(v);
 		set.insert(p.get());
 	}
 
 	for (auto p : set)
-		p->Draw();
+		p->Draw(m_xform);
 
 	glPopMatrix();
 }

@@ -1,5 +1,6 @@
 #include "Item.h"
 #include "Texture.h"
+#include "SpaceBitch.h"
 
 #include <SFML/OpenGL.hpp>
 
@@ -16,6 +17,8 @@ Item::~Item()
 void Item::Update(float tDelta)
 {
 	__super::Update(tDelta);
+
+	m_rotation += tDelta * 360;
 }
 
 

@@ -62,7 +62,7 @@ int main()
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef(0, -420, -500);
+		glTranslatef(0, -450, -500);
 		glRotatef(30, 1, 0, 0);
 
 		planet.Draw(window);

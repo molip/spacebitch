@@ -5,6 +5,7 @@
 #include "SFML/Graphics.hpp"
 
 #include <memory>
+class Matrix;
 
 class Sprite
 {
@@ -14,7 +15,7 @@ public:
 
 	virtual void Update(float tDelta);
 
-	void Draw() const;
+	void Draw(const Matrix& xf) const;
 
 	void SetFootPos(const sf::Vector3f& v) { m_posDraw = v; } // pixel space
 
@@ -31,6 +32,9 @@ public:
 	void SetAnimation(const sf::Texture& texture, int nFrames = 1, float fps = 0);
 	void SetAnimation(const char* sPath, int nFrames = 1, float fps = 0);
 	const Animation* GetAnimation() const { return m_pAnim.get(); }
+
+protected:
+	float m_rotation;
 
 private:
 	std::unique_ptr<Animation> m_pAnim;
