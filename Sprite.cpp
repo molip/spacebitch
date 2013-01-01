@@ -53,9 +53,10 @@ void Sprite::Draw(const Matrix& xf) const
 
 	glTranslatef(m_posDraw.x, m_posDraw.y, m_posDraw.z);
 	glScalef(m_width, m_width * sz.y / (float)sz.x, 1);
-	glRotatef(m_rotation, 0, 1, 0);
 
 	glRotatef(aZ * 180 / M_PI, 0, 0, 1);
+
+	glRotatef(m_rotation, 0, 1, 0);
 
 	glColor4f(1, 1, 1, m_alpha);
 
