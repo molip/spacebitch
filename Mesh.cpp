@@ -1,23 +1,52 @@
 #include "Mesh.h"
 #include "Matrix.h"
 #include "Vector.h"
+#include "SpaceBitch.h"
 
 #include <SFML/OpenGL.hpp>
 #include <iostream>
 
 void Mesh1::Draw(const Matrix& xf, const Vec2& vTexOffset) const
 {
-	const int nRows = 50, nSegs = 100; 
-	const int nTexRepeat = 2; // How many cells per texture
+	const int nRows = 100, nSegs = 200; 
+	const int nTexRepeat = 4; // How many cells per texture
 
 	float lastT, lastX, lastY[nSegs + 1], lastZ[nSegs + 1];
 	float rad = m_radius;	
 
-	auto Point = [&] (float x, float y, float z, float s,  float t)
+	auto Colour = [&] (float x, float y, float z, const Vec3& p, const Vec3& col1, Vec3& col2)
 	{
 		Vec3 v(x, y, z);
 		xf.MultPointInverse(v);
-		glColor3f(v.x < 0, v.y < 0, v.z < 0);
+		v.Normalise();
+		float angle = acosf(v.Dot(p.Normalised()));
+
+		float rad = 0.3f;
+		float border = 0.05f;
+		float val = (rad - angle) / border;
+		float c1 = std::min(val, 1.0f) * 0.5;
+		
+		if (c1 > 0)
+		{
+			float c2 = 1 - c1;		
+			col2.x = col2.x * c2 + col1.x * c1;
+			col2.y = col2.y * c2 + col1.y * c1;
+			col2.z = col2.z * c2 + col1.z * c1;
+
+			//col2.x -= col1.x * c1;
+			
+			//			glColor3f(c2 + c1 * r, c2 + c1 * g, c2 + c1 * b);
+		}
+	};
+
+	auto Point = [&] (float x, float y, float z, float s,  float t)
+	{
+		Vec3 col(1, 1, 1);
+		
+		Colour(x, y, z, Vec3(-1, 4, 0), Vec3(1, 0, 0), col);
+		Colour(x, y, z, Vec3(1, 4, 0), Vec3(0, 1, 0), col);
+		Colour(x, y, z, Vec3(0, 4, 1.5f), Vec3(0, 0, 1), col);
+		glColor3f(col.x, col.y, col.z);
 
 		glNormal3f(x, y, z);
 		glTexCoord2f(s, t);
