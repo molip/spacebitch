@@ -29,6 +29,10 @@ public:
 
 	void OnKeyPressed(sf::Keyboard::Key key);
 
+	static Planet* Instance() { return s_pInstance; }
+
+	int m_nSpriteRotateX;
+
 private:
 	void DrawPlanet() const;
 	void DrawSprites() const;
@@ -41,6 +45,7 @@ private:
 
 	sf::Texture m_texture;
 	Matrix m_xform;
+	int m_nRotateY;
 	float m_radius;
 	bool m_bWireframe, m_bHitTest;
 
@@ -53,5 +58,6 @@ private:
 	MeshType m_meshType;
 
 	Vec2 m_vTexOffset;
+	static Planet* s_pInstance;
 };
 

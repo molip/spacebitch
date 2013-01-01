@@ -25,9 +25,14 @@ namespace
 	}
 }
 
-Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Polar), m_bWireframe(false), m_bHitTest(true)
+Planet* Planet::s_pInstance;
+
+Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Polar), m_bWireframe(false), m_bHitTest(true),
+	m_nSpriteRotateX(-1), m_nRotateY(0)
 {
-    if (!m_texture.loadFromFile("../res/craters.png"))
+    s_pInstance = this;
+	
+	if (!m_texture.loadFromFile("../res/craters.png"))
 		throw;
 	m_texture.setRepeated(true);
 	m_texture.setSmooth(true);
@@ -45,7 +50,7 @@ Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Po
 	}
 
 	m_objs.push_back(std::unique_ptr<Sprite>(new Sprite(60, 1)));
-	m_objs.back()->SetPos(Vec3(0, 1, -0.2).Normalised());
+	m_objs.back()->SetPos(Vec3(0, 1, -0.2f).Normalised());
 	m_objs.back()->SetAnimation("../res/cookery.png");
 
 	for (int i = 0; i < 100; ++i)
@@ -62,6 +67,7 @@ Planet::Planet() : m_radius(500), m_pPlayer(new Player), m_meshType(MeshType::Po
 
 Planet::~Planet()
 {
+	s_pInstance = nullptr;
 }
 
 // v: normalised
@@ -172,6 +178,8 @@ void Planet::Update(float tDelta)
 
 void Planet::Draw(sf::RenderWindow& win) const
 {
+	glRotatef(m_nRotateY * 90, 0, 1, 0);
+	
 	DrawPlanet();
 	DrawSprites();
 }
@@ -187,6 +195,16 @@ void Planet::OnKeyPressed(sf::Keyboard::Key key)
 		m_bWireframe = !m_bWireframe;
 	else if (key == sf::Keyboard::H)
 		m_bHitTest = !m_bHitTest;
+	else if (key == sf::Keyboard::R)
+	{
+		if (++m_nSpriteRotateX == 1)
+			m_nSpriteRotateX = -1;
+		std::cout << "Planet::m_nSpriteRotateX: " << m_nSpriteRotateX << std::endl;
+	}
+	else if (key == sf::Keyboard::Q)
+		++m_nRotateY;
+	else if (key == sf::Keyboard::E)
+		--m_nRotateY;
 }
 
 void Planet::CreateMesh()

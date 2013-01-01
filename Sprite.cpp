@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Matrix.h"
 #include "Vector.h"
+#include "Planet.h"
 
 #include <SFML/OpenGL.hpp>
 
@@ -43,6 +44,7 @@ void Sprite::Draw(const Matrix& xf) const
 	xf.MultPoint(v, m_pos);
 
 	float aZ = -::atan2f(v.x, v.y);
+	float aX = ::atan2f(v.z, v.y) * Planet::Instance()->m_nSpriteRotateX;
 
 	glPushMatrix();
 	glDisable(GL_CULL_FACE);
@@ -55,6 +57,7 @@ void Sprite::Draw(const Matrix& xf) const
 	glScalef(m_width, m_width * sz.y / (float)sz.x, 1);
 
 	glRotatef(aZ * 180 / M_PI, 0, 0, 1);
+	glRotatef(aX * 180 / M_PI, 1, 0, 0);
 
 	glRotatef(m_rotation, 0, 1, 0);
 
